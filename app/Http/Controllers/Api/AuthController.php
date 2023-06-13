@@ -11,7 +11,7 @@ use Illuminate\Http\Exceptions\HttpResponseException;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
-use Response;
+use Illuminate\Http\Response;
 
 class AuthController extends Controller
 {
@@ -50,5 +50,18 @@ class AuthController extends Controller
             'token_type' => 'Bearer',
             'user' => $user
         ]);
+    }
+
+    public function logout(Request $request)
+    {
+        try {
+            auth()->user()->tokens()->delete();
+            return $this->apiSuccess('Tokens Revoked');
+        } catch (\Throwable $e) {
+            throw new HttpResponseException($this->apiError(
+                null,
+                Response::HTTP_INTERNAL_SERVER_ERROR,
+            ));
+        }
     }
 }
